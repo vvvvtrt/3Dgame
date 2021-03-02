@@ -97,8 +97,6 @@ class MainImage:
 
     def step(self, cordinat=(0, 0), a=0):
         x, y = cordinat
-        ArrayPoints = []
-        masg = []
         k = math.tan(math.radians(a))
         b = y - k * x
         if a not in (0, 90, 180, 270, 360):
@@ -151,6 +149,65 @@ class MainImage:
                 if 0 <= x < self.x and 0 <= y + 1 < self.y:
                     if self.pixels[x, y + 1] != (255, 255, 255):
                         return (x, y + 1)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+
+    def BackStep(self, cordinat=(0, 0), a=0):
+        x, y = cordinat
+        k = math.tan(math.radians(a))
+        b = y - k * x
+        if a not in (0, 90, 180, 270, 360):
+            if 270 > a > 90:
+                x1 = x + 1
+                y1 = int(k * x1 + b)
+                if 0 <= x1 < self.x and 0 <= y1 < self.y:
+                    if self.pixels[x1, y1] != (255, 255, 255):
+                        return (x1, y1)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+            else:
+                x1 = x - 1
+                y1 = int(k * x1 + b)
+                if 0 <= x1 < self.x and 0 <= y1 < self.y:
+                    if self.pixels[x1, y1] != (255, 255, 255):
+                        return (x1, y1)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+        else:
+            if a == 0:
+                if 0 <= x - 1 < self.x and 0 <= y < self.y:
+                    if self.pixels[x - 1, y] != (255, 255, 255):
+                        return (x - 1, y)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+            elif a == 180:
+                if 0 <= x + 1 < self.x and 0 <= y < self.y:
+                    if self.pixels[x + 1, y] != (255, 255, 255):
+                        return (x + 1, y)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+            elif a == 90:
+                if 0 <= x < self.x and 0 <= y + 1 < self.y:
+                    if self.pixels[x, y + 1] != (255, 255, 255):
+                        return (x, y + 1)
+                    else:
+                        return (x, y)
+                else:
+                    return (x, y)
+            else:
+                if 0 <= x < self.x and 0 <= y - 1 < self.y:
+                    if self.pixels[x, y - 1] != (255, 255, 255):
+                        return (x, y - 1)
                     else:
                         return (x, y)
                 else:

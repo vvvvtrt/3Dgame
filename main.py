@@ -2,6 +2,7 @@ import pygame
 import sys
 import settings
 import raycaster
+from time import sleep
 from threading import Thread
 
 
@@ -22,6 +23,39 @@ class Win(Thread):
                 print("You Win")
 
 
+class Traffic(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def run(self):
+        global x
+        global y
+        global a
+        global right
+        global left
+        global ForwardStep
+        global BackStep
+        global stop
+        c = raycaster.MainImage("map/level1.png")
+        while not stop:
+            if ForwardStep:
+                x, y = c.step(cordinat=(x, y), a=a)
+            elif BackStep:
+                x, y = c.BackStep(cordinat=(x, y), a=a)
+            if right:
+                a -= 1
+            elif left:
+                a += 1
+            sleep(0.1)
+
+def angle():
+    global a
+    if a >= 360:
+        a = 0
+    elif a < 0:
+        a = 360 + a
+
+
 def image(screen, img, x, y, r):
     image = pygame.image.load(img).convert_alpha()
     image = pygame.transform.scale(
@@ -38,28 +72,48 @@ clock = pygame.time.Clock()
 sc = pygame.display.set_mode(
     (WIN_WIDTH, WIN_HEIGHT))
 
+playWin = Win()
+playWin.start()
+
+control = Traffic()
+control.start()
+
+right = False
+left = False
+ForwardStep = False
+BackStep = False
+stop = False
+
 x = 6
 y = 5
 a = 0
-while 1:
+
+while True:
     c = raycaster.MainImage("map/level1.png")
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
+            stop = True
+            playWin.Stop()
             sys.exit()
         elif i.type == pygame.KEYDOWN:
             if i.key == pygame.K_LEFT:
-                a += 1
+                left = True
             elif i.key == pygame.K_RIGHT:
-                a -= 1
+                right = True
             elif i.key == pygame.K_UP:
-                x, y = c.step(cordinat=(x, y), a=a)
+                ForwardStep = True
             elif i.key == pygame.K_DOWN:
-                x, y = c.BackStep(cordinat=(x, y), a=a)
-
-    if a >= 360:
-        a = 0
-    elif a < 0:
-        a = 360 + a
+                BackStep = True
+        elif i.type == pygame.KEYUP:
+            if i.key == pygame.K_LEFT:
+                left = False
+            if i.key == pygame.K_RIGHT:
+                right = False
+            if i.key == pygame.K_UP:
+                ForwardStep = False
+            if i.key == pygame.K_DOWN:
+                ForwardStep = False
+    angle()
     sc.fill(WHITE)
     c = c.raycasting(cordinat=(x, y), a=a)
     textur = []
